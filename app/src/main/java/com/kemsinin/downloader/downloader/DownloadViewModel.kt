@@ -31,8 +31,10 @@ data class UiState(
     val tiktokMsToken: String = "",
     val tiktokChainToken: String = "",
     val youtubeCookies: String = "",
+    val facebookCookies: String = "",
     val tiktokHint: Boolean = false,
     val youtubeHint: Boolean = false,
+    val facebookHint: Boolean = false,
     val downloads: List<DownloadItem> = emptyList(),
     val tab: Tab = Tab.Download,
     val legacyStorageGranted: Boolean = Build.VERSION.SDK_INT > 28,
@@ -75,12 +77,13 @@ class DownloadViewModel(app: Application) : AndroidViewModel(app) {
                 tiktokMsToken = prefs.getString("tiktok_ms_token", "") ?: "",
                 tiktokChainToken = prefs.getString("tiktok_chain_token", "") ?: "",
                 youtubeCookies = prefs.getString("youtube_cookies", "") ?: "",
+                facebookCookies = prefs.getString("facebook_cookies", "") ?: "",
             )
         }
     }
 
     fun onUrlChange(value: String) {
-        _state.update { it.copy(url = value, selectedPlatform = null, tiktokHint = false) }
+        _state.update { it.copy(url = value, selectedPlatform = null, tiktokHint = false, facebookHint = false) }
     }
 
     fun selectPlatform(platform: Platform) {
@@ -89,6 +92,7 @@ class DownloadViewModel(app: Application) : AndroidViewModel(app) {
                 selectedPlatform = if (it.selectedPlatform == platform) null else platform,
                 url = platform.example,
                 tiktokHint = false,
+                facebookHint = false,
             )
         }
     }
@@ -136,6 +140,26 @@ class DownloadViewModel(app: Application) : AndroidViewModel(app) {
             .apply()
     }
 
+    fun setFacebookCookies(value: String) {
+        _state.update {
+            it.copy(
+                facebookCookies = value.trim(),
+                savedMessage = getApplication<Application>().getString(com.kemsinin.downloader.R.string.settings_saved_msg),
+                facebookHint = false,
+            )
+        }
+        prefs.edit()
+            .putString("facebook_cookies", _state.value.facebookCookies)
+            .apply()
+    }
+
+    fun clearFacebookCookies() {
+        _state.update { it.copy(facebookCookies = "") }
+        prefs.edit()
+            .remove("facebook_cookies")
+            .apply()
+    }
+
     fun setTab(tab: Tab) {
         _state.update { it.copy(tab = tab) }
     }
@@ -168,7 +192,7 @@ class DownloadViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val info = DownloadEngine.getInfo(url, cookiesFilePath())
-                _state.update { it.copy(analyzing = false, video = info, selectedFormat = 0, tiktokHint = false) }
+                _state.update { it.copy(analyzing = false, video = info, selectedFormat = 0, tiktokHint = false, facebookHint = false) }
             } catch (e: Exception) {
                 val message = friendlyError(e)
                 _state.update {
@@ -181,18 +205,22 @@ class DownloadViewModel(app: Application) : AndroidViewModel(app) {
                         youtubeHint = isYouTubeUrl(url) &&
                             isBotError(message) &&
                             it.youtubeCookies.isBlank(),
+                        facebookHint = isFacebookUrl(url) &&
+                            isBotError(message) &&
+                            it.facebookCookies.isBlank(),
                     )
                 }
             }
         }
     }
 
-    /** Writes the user's TikTok/YouTube cookies to a Netscape-format file yt-dlp can read. */
+    /** Writes the user's TikTok/YouTube/Facebook cookies to a Netscape-format file yt-dlp can read. */
     private fun cookiesFilePath(): String? {
         val ms = _state.value.tiktokMsToken
         val chain = _state.value.tiktokChainToken
         val yt = _state.value.youtubeCookies
-        if (ms.isBlank() && chain.isBlank() && yt.isBlank()) return null
+        val fb = _state.value.facebookCookies
+        if (ms.isBlank() && chain.isBlank() && yt.isBlank() && fb.isBlank()) return null
         val dir = File(getApplication<Application>().cacheDir, "cookies").apply { mkdirs() }
         val file = File(dir, "cookies.txt")
         val sb = StringBuilder("# Netscape HTTP Cookie File\n")
@@ -211,6 +239,20 @@ class DownloadViewModel(app: Application) : AndroidViewModel(app) {
                     val value = pair.substring(idx + 1).trim()
                     if (key.isNotEmpty()) {
                         sb.append(".youtube.com\tTRUE\t/\tTRUE\t0\t")
+                            .append(key).append('\t').append(value).append('\n')
+                    }
+                }
+            }
+        }
+        if (fb.isNotBlank()) {
+            // Facebook cookies from browser header: "c_user=...; xs=...; datr=..."
+            fb.split(';').forEach { pair ->
+                val idx = pair.indexOf('=')
+                if (idx > 0) {
+                    val key = pair.substring(0, idx).trim()
+                    val value = pair.substring(idx + 1).trim()
+                    if (key.isNotEmpty()) {
+                        sb.append(".facebook.com\tTRUE\t/\tTRUE\t0\t")
                             .append(key).append('\t').append(value).append('\n')
                     }
                 }
@@ -523,18 +565,25 @@ class DownloadViewModel(app: Application) : AndroidViewModel(app) {
         return low.contains("youtube") || low.contains("youtu.be")
     }
 
+    private fun isFacebookUrl(url: String): Boolean {
+        val low = url.lowercase()
+        return low.contains("facebook.com") || low.contains("fb.watch") || low.contains("fb.com")
+    }
+
     private fun isBotError(message: String): Boolean {
         val low = message.lowercase()
         return low.contains("sign in to confirm") ||
             low.contains("not a bot") ||
-            low.contains("login required")
+            low.contains("login required") ||
+            low.contains("log in") ||
+            low.contains("must log in")
     }
 
     companion object {
         fun platformName(extractor: String): String = when {
             extractor.contains("Youtube") -> "YouTube"
             extractor.contains("TikTok") -> "TikTok"
-            extractor.contains("Facebook") -> "Facebook"
+            extractor.contains("Facebook") || extractor.contains("facebook") -> "Facebook"
             extractor.contains("Instagram") -> "Instagram"
             extractor.contains("Twitter") || extractor.contains("X") -> "X (Twitter)"
             extractor.contains("Pinterest") -> "Pinterest"

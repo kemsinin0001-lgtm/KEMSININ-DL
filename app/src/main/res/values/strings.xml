@@ -87,11 +87,16 @@ How to find it: open tiktok.com in Chrome → F12 → Application → Cookies �
     <string name="settings_cancel">Cancel</string>
     <string name="settings_clear">Clear TikTok cookies</string>
     <string name="settings_clear_youtube">Clear YouTube cookies</string>
+    <string name="settings_clear_facebook">Clear Facebook cookies</string>
     <string name="settings_saved_msg">Cookies saved</string>
     <string name="settings_youtube_cookies_label">YouTube cookies (Cookie header)</string>
     <string name="settings_youtube_desc">YouTube sometimes blocks downloads with a bot-check. Paste the Cookie header from a browser where you are signed in to YouTube.
 
 How to get it: open youtube.com in Chrome → F12 → Network → reload the page → click any request → Request Headers → copy the whole Cookie value.</string>
+    <string name="settings_facebook_cookies_label">Facebook cookies (c_user, xs, etc.)</string>
+    <string name="settings_facebook_desc">Some Facebook Reels and Profiles require login cookies. Paste your Facebook Cookie header or tokens from your browser here.
+
+How to get it: open facebook.com in Chrome → F12 → Application → Cookies → https://www.facebook.com → or Network tab Cookie header.</string>
 
     <!-- TikTok hint -->
     <string name="tiktok_hint_title">TikTok needs a cookie to download</string>
@@ -99,6 +104,8 @@ How to get it: open youtube.com in Chrome → F12 → Network → reload the pag
     <string name="tiktok_hint_open_settings">Open Settings</string>
     <string name="youtube_hint_title">YouTube needs a cookie to download</string>
     <string name="youtube_hint_msg">YouTube blocked this download as a bot-check. Add your YouTube cookies in Settings to fix it.</string>
+    <string name="facebook_hint_title">Facebook needs login cookies</string>
+    <string name="facebook_hint_msg">This Facebook video or profile reel is restricted or requires login. Add your Facebook cookies in Settings to download.</string>
 
     <!-- Misc -->
     <string name="by">by</string>

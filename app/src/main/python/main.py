@@ -24,6 +24,14 @@ _BASE_OPTS = {
     "socket_timeout": 30,
     "retries": 3,
     "fragment_retries": 3,
+    "http_headers": {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        ),
+        "Accept-Language": "en-US,en;q=0.9",
+    },
 }
 
 _BOT_ERROR_HINTS = (
@@ -32,31 +40,64 @@ _BOT_ERROR_HINTS = (
     "sign in to confirm your age",
     "login required",
     "log in",
+    "must log in",
+    "login to facebook",
 )
 
 
 def _is_bot_error(message):
-    """True when a YouTube-style sign-in / bot-check error is raised."""
+    """True when a sign-in or bot-check error is raised."""
     low = (message or "").lower()
     return any(h in low for h in _BOT_ERROR_HINTS)
 
 
+def _is_facebook_url(url):
+    """Detect if URL is from Facebook (video, reel, or profile)."""
+    low = (url or "").lower()
+    return "facebook.com" in low or "fb.watch" in low or "fb.com" in low
+
+
+def _is_facebook_profile_or_reels(url):
+    """True when the URL is a Facebook profile/page reels/videos collection."""
+    low = (url or "").lower()
+    if not _is_facebook_url(low):
+        return False
+    # If it's a specific reel or video watch URL, it's a single video
+    if "/reel/" in low or "/videos/" in low and any(c.isdigit() for c in low):
+        # Could still be /user/videos/ tab if no ID
+        parts = [p for p in low.split("?")[0].split("/") if p]
+        if parts and parts[-1] in ("reels", "videos"):
+            return True
+        return False
+    if "/watch" in low or "fb.watch" in low:
+        return False
+    # General profile URL or /reels /videos path
+    return any(keyword in low for keyword in ("/reels", "/videos", "profile.php")) or ("facebook.com/" in low and "/" in low.split("facebook.com/")[1])
+
+
 def _extract(url, opts, download):
-    """Extract info, retrying once with the Android player client when YouTube
-    answers with its "Sign in to confirm you're not a bot" check. The Android
-    app client is usually served without the sign-in wall."""
+    """Extract info, with specialized platform fallbacks (YouTube client retry & Facebook)."""
+    run_opts = dict(opts)
+    if _is_facebook_url(url):
+        # Ensure Facebook reels and profiles extract cleanly
+        run_opts["extract_flat"] = "in_playlist"
+        # Bound playlist/profile extraction to first 50 videos so it won't hang indefinitely
+        run_opts["playlistend"] = 50
+
     try:
-        with yt_dlp.YoutubeDL(opts) as ydl:
+        with yt_dlp.YoutubeDL(run_opts) as ydl:
             return ydl.extract_info(url, download=download)
     except Exception as e:
         message = str(e) or ""
         if not _is_bot_error(message):
             raise
-        print("[KEMSININ] YouTube bot-check hit; retrying with the Android player client")
-        retry = dict(opts)
-        retry["extractor_args"] = {"youtube": {"player_client": ["android", "web"]}}
-        with yt_dlp.YoutubeDL(retry) as ydl:
-            return ydl.extract_info(url, download=download)
+        if "youtube" in url.lower() or "youtu.be" in url.lower():
+            print("[KEMSININ] YouTube bot-check hit; retrying with the Android player client")
+            retry = dict(run_opts)
+            retry["extractor_args"] = {"youtube": {"player_client": ["android", "web"]}}
+            with yt_dlp.YoutubeDL(retry) as ydl:
+                return ydl.extract_info(url, download=download)
+        raise
 
 
 def _entry(info):
@@ -220,26 +261,36 @@ def _video_result(info):
 
 
 def _playlist_result(info, entries):
-    entry_list = [e for e in entries if e]
+    # entries may be a generator or list
+    entry_list = []
+    for e in entries:
+        if not e:
+            continue
+        entry_list.append(e)
+        if len(entry_list) >= 50:  # Cap at 50 to ensure responsiveness on mobile
+            break
+
     return {
         "is_playlist": True,
-        "title": info.get("title") or "Playlist",
+        "title": info.get("title") or "Facebook / Social Collection",
         "thumbnail": info.get("thumbnail") or (
             entry_list[0].get("thumbnail") or "" if entry_list else ""
         ),
         "uploader": info.get("uploader") or info.get("channel") or "",
         "duration": 0,
-        "extractor": info.get("extractor_key") or info.get("extractor") or "",
+        "extractor": info.get("extractor_key") or info.get("extractor") or "Facebook",
         "formats": _generic_formats(),
         "entries": [
             {
                 "id": e.get("id") or "",
-                "title": e.get("title") or "Untitled",
-                "url": e.get("webpage_url") or e.get("url") or "",
+                "title": e.get("title") or ("Facebook Reel #" + str(i + 1)),
+                "url": e.get("webpage_url") or e.get("url") or (
+                    "https://www.facebook.com/reel/" + str(e.get("id")) if e.get("id") else ""
+                ),
                 "thumbnail": e.get("thumbnail") or "",
                 "duration": e.get("duration") or 0,
             }
-            for e in entry_list
+            for i, e in enumerate(entry_list)
         ],
     }
 

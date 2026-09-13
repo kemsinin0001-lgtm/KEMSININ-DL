@@ -256,7 +256,7 @@ private fun DownloadTab(
                 FilterChip(
                     selected = state.selectedPlatform == platform,
                     onClick = { viewModel.selectPlatform(platform) },
-                    label = { Text("${platform.emoji} ${platform.name}") },
+                    label = { Text("${platform.emoji} ${platform.displayName}") },
                 )
             }
         }
@@ -305,6 +305,14 @@ private fun DownloadTab(
             CookieHintBanner(
                 title = stringResource(R.string.youtube_hint_title),
                 message = stringResource(R.string.youtube_hint_msg),
+                error = state.error.orEmpty(),
+                onOpenSettings = { showSettings = true },
+            )
+        } else if (state.facebookHint) {
+            Spacer(Modifier.height(12.dp))
+            CookieHintBanner(
+                title = stringResource(R.string.facebook_hint_title),
+                message = stringResource(R.string.facebook_hint_msg),
                 error = state.error.orEmpty(),
                 onOpenSettings = { showSettings = true },
             )
@@ -386,9 +394,11 @@ private fun DownloadTab(
             msToken = state.tiktokMsToken,
             chainToken = state.tiktokChainToken,
             youtubeCookies = state.youtubeCookies,
-            onSave = { ms, chain, yt ->
+            facebookCookies = state.facebookCookies,
+            onSave = { ms, chain, yt, fb ->
                 viewModel.setTiktokTokens(ms, chain)
                 viewModel.setYoutubeCookies(yt)
+                viewModel.setFacebookCookies(fb)
                 showSettings = false
             },
             onClearTikTok = {
@@ -397,6 +407,10 @@ private fun DownloadTab(
             },
             onClearYoutube = {
                 viewModel.clearYoutubeCookies()
+                showSettings = false
+            },
+            onClearFacebook = {
+                viewModel.clearFacebookCookies()
                 showSettings = false
             },
             onDismiss = { showSettings = false },
@@ -453,14 +467,17 @@ private fun SettingsDialog(
     msToken: String,
     chainToken: String,
     youtubeCookies: String,
-    onSave: (String, String, String) -> Unit,
+    facebookCookies: String,
+    onSave: (String, String, String, String) -> Unit,
     onClearTikTok: () -> Unit,
     onClearYoutube: () -> Unit,
+    onClearFacebook: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var ms by remember { mutableStateOf(msToken) }
     var chain by remember { mutableStateOf(chainToken) }
     var yt by remember { mutableStateOf(youtubeCookies) }
+    var fb by remember { mutableStateOf(facebookCookies) }
     var showHowTo by remember { mutableStateOf(false) }
     if (showHowTo) {
         HowToDialog(onDismiss = { showHowTo = false })
@@ -527,10 +544,31 @@ private fun SettingsDialog(
                 TextButton(onClick = onClearYoutube) {
                     Text(stringResource(R.string.settings_clear_youtube), color = MaterialTheme.colorScheme.error)
                 }
+
+                Spacer(Modifier.height(18.dp))
+                Text(
+                    text = stringResource(R.string.settings_facebook_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(10.dp))
+                OutlinedTextField(
+                    value = fb,
+                    onValueChange = { fb = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 2,
+                    maxLines = 4,
+                    label = { Text(stringResource(R.string.settings_facebook_cookies_label)) },
+                    placeholder = { Text(stringResource(R.string.settings_token_placeholder)) },
+                )
+                Spacer(Modifier.height(12.dp))
+                TextButton(onClick = onClearFacebook) {
+                    Text(stringResource(R.string.settings_clear_facebook), color = MaterialTheme.colorScheme.error)
+                }
             }
         },
         confirmButton = {
-            TextButton(onClick = { onSave(ms, chain, yt) }) {
+            TextButton(onClick = { onSave(ms, chain, yt, fb) }) {
                 Text(stringResource(R.string.settings_save))
             }
         },

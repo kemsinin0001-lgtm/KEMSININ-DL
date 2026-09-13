@@ -87,11 +87,16 @@
     <string name="settings_cancel">បោះបង់</string>
     <string name="settings_clear">លុប TikTok cookies</string>
     <string name="settings_clear_youtube">លុប YouTube cookies</string>
+    <string name="settings_clear_facebook">លុប Facebook cookies</string>
     <string name="settings_saved_msg">បានរក្សាទុក cookies</string>
     <string name="settings_youtube_cookies_label">YouTube cookies (Cookie header)</string>
     <string name="settings_youtube_desc">YouTube ពេលខ្លះរារាំងការទាញយកដោយ bot-check។ សូមបិទភ្ជាប់ Cookie header ពី browser ដែលអ្នកបានចូល YouTube។
 
 របៀបរក៖ បើក youtube.com ក្នុង Chrome → F12 → Network → ផ្ទុកទំព័រឡើងវិញ → ចុច request ណាមួយ → Request Headers → ចម្លងតម្លៃ Cookie ទាំងមូល។</string>
+    <string name="settings_facebook_cookies_label">Facebook cookies (c_user, xs...)</string>
+    <string name="settings_facebook_desc">វីដេអូ Reel ឬ Profile ហ្វេសប៊ុកមួយចំនួនតម្រូវឱ្យចូលគណនី។ សូមចម្លង Cookie header របស់ Facebook ពី browser មកបិទភ្ជាប់នៅទីនេះ។
+
+របៀបរក៖ បើក facebook.com ក្នុង Chrome → F12 → Application → Cookies → https://www.facebook.com → ឬក្នុងផ្ទាំង Network ចម្លងតម្លៃ Cookie ទាំងមូល។</string>
 
     <!-- TikTok hint -->
     <string name="tiktok_hint_title">TikTok ត្រូវការ cookie ដើម្បីទាញយក</string>
@@ -99,6 +104,8 @@
     <string name="tiktok_hint_open_settings">បើក ការកំណត់</string>
     <string name="youtube_hint_title">YouTube ត្រូវការ cookie ដើម្បីទាញយក</string>
     <string name="youtube_hint_msg">YouTube បានរារាំងការទាញយកនេះ (bot-check)។ សូមបន្ថែម YouTube cookies ក្នុង ការកំណត់ ដើម្បីដោះស្រាយ។</string>
+    <string name="facebook_hint_title">Facebook ត្រូវការ login cookie</string>
+    <string name="facebook_hint_msg">Facebook បានរារាំង ឬតម្រូវឱ្យ Login ទើបអាចទាញយក Reel ឬ Profile នេះបាន។ សូមបន្ថែម Facebook cookies ក្នុង ការកំណត់។</string>
 
     <!-- Misc -->
     <string name="by">ដោយ</string>

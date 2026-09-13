@@ -62,16 +62,18 @@ data class DownloadProgress(
 
 enum class Tab { Download, History }
 
-enum class Platform(val emoji: String, val example: String) {
-    YouTube("▶️", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
-    TikTok("🎵", "https://www.tiktok.com/@tiktok/video/7123456789012345678"),
-    Facebook("👍", "https://www.facebook.com/watch/?v=1234567890123456"),
-    Instagram("📸", "https://www.instagram.com/reel/ABC123xyz/"),
-    X("🐦", "https://x.com/i/status/1234567890123456789"),
-    Pinterest("📌", "https://www.pinterest.com/pin/123456789012345678/"),
-    Vimeo("🎬", "https://vimeo.com/123456789"),
-    Snapchat("👻", "https://www.snapchat.com/spotlight/ABC123"),
-    Reddit("👽", "https://www.reddit.com/r/videos/comments/abc123/"),
-    Twitch("🎮", "https://www.twitch.tv/videos/1234567890"),
-    Dailymotion("📹", "https://www.dailymotion.com/video/x8abcde"),
+enum class Platform(val emoji: String, val displayName: String, val example: String) {
+    YouTube("▶️", "YouTube", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+    TikTok("🎵", "TikTok", "https://www.tiktok.com/@tiktok/video/7123456789012345678"),
+    FacebookReel("🎬", "FB Reel", "https://www.facebook.com/reel/1234567890123456"),
+    FacebookProfile("👤", "FB Profile Reels", "https://www.facebook.com/username/reels"),
+    Facebook("👍", "Facebook", "https://www.facebook.com/watch/?v=1234567890123456"),
+    Instagram("📸", "Instagram", "https://www.instagram.com/reel/ABC123xyz/"),
+    X("🐦", "X (Twitter)", "https://x.com/i/status/1234567890123456789"),
+    Pinterest("📌", "Pinterest", "https://www.pinterest.com/pin/123456789012345678/"),
+    Vimeo("🎬", "Vimeo", "https://vimeo.com/123456789"),
+    Snapchat("👻", "Snapchat", "https://www.snapchat.com/spotlight/ABC123"),
+    Reddit("👽", "Reddit", "https://www.reddit.com/r/videos/comments/abc123/"),
+    Twitch("🎮", "Twitch", "https://www.twitch.tv/videos/1234567890"),
+    Dailymotion("📹", "Dailymotion", "https://www.dailymotion.com/video/x8abcde"),
 }
