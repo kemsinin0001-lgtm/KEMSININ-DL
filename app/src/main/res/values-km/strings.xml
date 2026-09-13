@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KEMSININ Downloader</string>
+
+    <!-- Tabs -->
+    <string name="tab_download">ទាញយក</string>
+    <string name="tab_history">ប្រវត្តិ</string>
+
+    <!-- Header -->
+    <string name="header_title">KEMSININ DOWNLOADER</string>
+    <string name="header_subtitle">ទាញយកវីដេអូ និងសំឡេងពីបណ្តាញសង្គមទាំងអស់</string>
+
+    <!-- URL input -->
+    <string name="url_label">Link វីដេអូ</string>
+    <string name="url_placeholder">បិទភ្ជាប់ link ពី YouTube, TikTok, Facebook…</string>
+    <string name="action_paste">បិទភ្ជាប់ពី clipboard</string>
+    <string name="action_clear">លុប</string>
+
+    <!-- Platforms -->
+    <string name="platforms_label">បណ្តាញសង្គមដែលគាំទ្រ</string>
+    <string name="hint_platform_selected">បានបិទភ្ជាប់ link ឧទាហរណ៍។ សូមប្តូរទៅ link វីដេអូផ្ទាល់ខ្លួនរបស់អ្នក រួចប៉ះ វិភាគ។</string>
+
+    <!-- Actions -->
+    <string name="action_analyze">វិភាគ</string>
+    <string name="action_analyzing">កំពុងវិភាគ…</string>
+    <string name="action_download">ទាញយក</string>
+    <string name="action_cancel">បោះបង់</string>
+    <string name="action_open">បើក</string>
+    <string name="action_retry">ព្យាយាមម្តងទៀត</string>
+    <string name="action_download_all">ទាញយកទាំងអស់</string>
+    <string name="action_download_single">ទាញយកតែមួយ</string>
+    <string name="hint_select_video">ជ្រើសរើសវីដេអូខាងលើ ដើម្បីទាញយកតែមួយ</string>
+
+    <!-- Video info -->
+    <string name="format_quality">%1$dp · %2$s</string>
+    <string name="label_formats">ជ្រើសរើសគុណភាព</string>
+    <string name="status_finalizing">កំពុងរក្សាទុកទៅ Downloads…</string>
+    <string name="status_starting">កំពុងចាប់ផ្តើម…</string>
+    <string name="status_batch_downloading">កំពុងទាញយក %1$d/%2$d</string>
+    <string name="playlist_videos_label">វីដេអូ (%1$d)</string>
+
+    <!-- History -->
+    <string name="history_title">ការទាញយករបស់ខ្ញុំ</string>
+    <string name="history_empty">មិនទាន់មានការទាញយកទេ។\nវីដេអូដែលបានរក្សាទុកនឹងបង្ហាញនៅទីនេះ។</string>
+    <string name="history_clear_all">សម្អាតប្រវត្តិ</string>
+    <string name="history_clear_confirm">សម្អាតប្រវត្តិទាំងអស់?</string>
+    <string name="history_clear_confirm_msg">នេះគ្រាន់តែសម្អាតបញ្ជី មិនលុបឯកសារទេ។</string>
+    <string name="action_yes">បាទ</string>
+    <string name="action_no">ទេ</string>
+    <string name="status_saved">បានរក្សាទុក</string>
+    <string name="status_failed">បរាជ័យ</string>
+    <string name="status_cancelled">បានបោះបង់</string>
+    <string name="action_delete">លុបពីប្រវត្តិ</string>
+
+    <!-- Messages -->
+    <string name="msg_analyze_error">មិនអាចវិភាគ link នេះបានទេ។ សូមពិនិត្យ URL ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="msg_saved_to_downloads">បានរក្សាទុកទៅ Downloads</string>
+    <string name="msg_download_failed">ការទាញយកបរាជ័យ៖ %1$s</string>
+    <string name="msg_download_cancelled">បានបោះបង់ការទាញយក</string>
+    <string name="msg_batch_saved">បានរក្សាទុក %1$d ក្នុងចំណោម %2$d វីដេអូ</string>
+    <string name="msg_batch_saved_failed">បានរក្សាទុក %1$d ក្នុងចំណោម %2$d វីដេអូ · %3$d បរាជ័យ</string>
+    <string name="msg_no_url">សូមបិទភ្ជាប់ link វីដេអូជាមុនសិន</string>
+    <string name="msg_storage_permission">ត្រូវការការអនុញ្ញាតផ្ទុកឯកសារ ដើម្បីរក្សាទុក</string>
+    <string name="msg_file_not_found">រកមិនឃើញឯកសារ</string>
+    <string name="msg_open_error">មិនអាចបើកឯកសារនេះបានទេ</string>
+
+    <!-- Settings -->
+    <string name="settings_title">ការកំណត់</string>
+    <string name="settings_tiktok_desc">TikTok បង្ហាញ bot-check ដល់អ្នកទាញយក។ សូមបិទភ្ជាប់ cookie ms_token ពី browser របស់អ្នក ដើម្បីអាចទាញយកពី TikTok បាន។
+
+របៀបរក៖ បើក tiktok.com ក្នុង Chrome → F12 → Application → Cookies → tiktok.com → ចម្លងតម្លៃ ms_token (និង tt_chain_token បើមាន)។</string>
+    <string name="settings_how_to">របៀបយក ms_token</string>
+    <string name="settings_howto_title">របៀបយក ms_token</string>
+    <string name="settings_howto_step1">បើក tiktok.com ក្នុង Chrome លើកុំព្យូទ័រ រួចចូលគណនី TikTok របស់អ្នក។</string>
+    <string name="settings_howto_step2">ចុច F12 (Windows) ឬ Cmd+Option+I (Mac) ដើម្បីបើក DevTools។</string>
+    <string name="settings_howto_step3">ប៉ះផ្ទាំង "Application" នៅខាងលើ DevTools។</string>
+    <string name="settings_howto_step4">ក្នុងបញ្ជីខាងឆ្វេង បើក៖ Storage → Cookies → https://www.tiktok.com</string>
+    <string name="settings_howto_step5">រក cookie ឈ្មោះ ms_token។</string>
+    <string name="settings_howto_step6">ចុចពីរដងលើជួរឈរ Value រួចចម្លងតម្លៃទាំងមូល (វែងណាស់)។</string>
+    <string name="settings_howto_step7">បិទភ្ជាប់ក្នុងវាល ms_token ខាងលើ រួចប៉ះ រក្សាទុក។</string>
+    <string name="settings_howto_note">គន្លឹះ៖ បើ TikTok នៅតែសុំចូលគណនី សូមចម្លង tt_chain_token តាមរបៀបដដែលផងដែរ។</string>
+    <string name="settings_ok">យល់ព្រម</string>
+    <string name="settings_ms_token_label">ms_token</string>
+    <string name="settings_chain_token_label">tt_chain_token (ស្រេចចិត្ត)</string>
+    <string name="settings_token_placeholder">បិទភ្ជាប់តម្លៃ cookie នៅទីនេះ</string>
+    <string name="settings_save">រក្សាទុក</string>
+    <string name="settings_cancel">បោះបង់</string>
+    <string name="settings_clear">លុប TikTok cookies</string>
+    <string name="settings_clear_youtube">លុប YouTube cookies</string>
+    <string name="settings_saved_msg">បានរក្សាទុក cookies</string>
+    <string name="settings_youtube_cookies_label">YouTube cookies (Cookie header)</string>
+    <string name="settings_youtube_desc">YouTube ពេលខ្លះរារាំងការទាញយកដោយ bot-check។ សូមបិទភ្ជាប់ Cookie header ពី browser ដែលអ្នកបានចូល YouTube។
+
+របៀបរក៖ បើក youtube.com ក្នុង Chrome → F12 → Network → ផ្ទុកទំព័រឡើងវិញ → ចុច request ណាមួយ → Request Headers → ចម្លងតម្លៃ Cookie ទាំងមូល។</string>
+
+    <!-- TikTok hint -->
+    <string name="tiktok_hint_title">TikTok ត្រូវការ cookie ដើម្បីទាញយក</string>
+    <string name="tiktok_hint_msg">TikTok រារាំងការទាញយកដោយគ្មាន cookie ចូលគណនី។ សូមបន្ថែម ms_token របស់អ្នកក្នុង ការកំណត់ ដើម្បីអាចទាញយកពី TikTok បាន។</string>
+    <string name="tiktok_hint_open_settings">បើក ការកំណត់</string>
+    <string name="youtube_hint_title">YouTube ត្រូវការ cookie ដើម្បីទាញយក</string>
+    <string name="youtube_hint_msg">YouTube បានរារាំងការទាញយកនេះ (bot-check)។ សូមបន្ថែម YouTube cookies ក្នុង ការកំណត់ ដើម្បីដោះស្រាយ។</string>
+
+    <!-- Misc -->
+    <string name="by">ដោយ</string>
+</resources>

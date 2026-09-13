@@ -1,0 +1,23 @@
+*.iml
+.gradle
+local.properties
+.idea/
+.DS_Store
+build/
+app/build/
+/build
+/captures
+.externalNativeBuild
+.cxx
+
+# Signing keystore - never commit
+keystore/
+
+# Local cache and temporary directories
+.freebuff/
+.kotlin/
+dist/
+
+# Build output / APKs
+*.apk
+

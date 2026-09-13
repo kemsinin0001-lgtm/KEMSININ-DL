@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KEMSININ Downloader</string>
+
+    <!-- Tabs -->
+    <string name="tab_download">Download</string>
+    <string name="tab_history">History</string>
+
+    <!-- Header -->
+    <string name="header_title">KEMSININ DOWNLOADER</string>
+    <string name="header_subtitle">Download videos &amp; audio from any social media</string>
+
+    <!-- URL input -->
+    <string name="url_label">Video URL</string>
+    <string name="url_placeholder">Paste a link from YouTube, TikTok, Facebook…</string>
+    <string name="action_paste">Paste from clipboard</string>
+    <string name="action_clear">Clear</string>
+
+    <!-- Platforms -->
+    <string name="platforms_label">Supported platforms</string>
+    <string name="hint_platform_selected">Example link pasted. Replace it with your own video link and tap Analyze.</string>
+
+    <!-- Actions -->
+    <string name="action_analyze">Analyze</string>
+    <string name="action_analyzing">Analyzing…</string>
+    <string name="action_download">Download</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_open">Open</string>
+    <string name="action_retry">Try again</string>
+    <string name="action_download_all">Download All</string>
+    <string name="action_download_single">Download Single File</string>
+    <string name="hint_select_video">Select a video above to download just that one</string>
+
+    <!-- Video info -->
+    <string name="format_quality">%1$dp · %2$s</string>
+    <string name="label_formats">Choose quality</string>
+    <string name="status_finalizing">Saving to Downloads…</string>
+    <string name="status_starting">Starting…</string>
+    <string name="status_batch_downloading">Downloading %1$d of %2$d</string>
+    <string name="playlist_videos_label">Videos (%1$d)</string>
+
+    <!-- History -->
+    <string name="history_title">My downloads</string>
+    <string name="history_empty">No downloads yet.\nYour saved videos will appear here.</string>
+    <string name="history_clear_all">Clear history</string>
+    <string name="history_clear_confirm">Delete all history?</string>
+    <string name="history_clear_confirm_msg">This only clears the list, it does not delete the files.</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_no">No</string>
+    <string name="status_saved">Saved</string>
+    <string name="status_failed">Failed</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="action_delete">Delete from history</string>
+
+    <!-- Messages -->
+    <string name="msg_analyze_error">Could not analyze this link. Check the URL and try again.</string>
+    <string name="msg_saved_to_downloads">Saved to Downloads</string>
+    <string name="msg_download_failed">Download failed: %1$s</string>
+    <string name="msg_download_cancelled">Download cancelled</string>
+    <string name="msg_batch_saved">Saved %1$d of %2$d videos</string>
+    <string name="msg_batch_saved_failed">Saved %1$d of %2$d videos · %3$d failed</string>
+    <string name="msg_no_url">Please paste a video link first</string>
+    <string name="msg_storage_permission">Storage permission is required to save files</string>
+    <string name="msg_file_not_found">File not found</string>
+    <string name="msg_open_error">Cannot open this file</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_tiktok_desc">TikTok shows a bot-check to downloaders. Paste the ms_token cookie from your browser to unlock TikTok downloads.
+
+How to find it: open tiktok.com in Chrome → F12 → Application → Cookies → tiktok.com → copy the ms_token value (and tt_chain_token if present).</string>
+    <string name="settings_how_to">How to get ms_token</string>
+    <string name="settings_howto_title">How to get ms_token</string>
+    <string name="settings_howto_step1">Open tiktok.com in Chrome on your computer and log in to your TikTok account.</string>
+    <string name="settings_howto_step2">Press F12 (Windows) or Cmd+Option+I (Mac) to open DevTools.</string>
+    <string name="settings_howto_step3">Tap the "Application" tab at the top of DevTools.</string>
+    <string name="settings_howto_step4">In the left panel, open: Storage → Cookies → https://www.tiktok.com</string>
+    <string name="settings_howto_step5">Find the cookie named ms_token.</string>
+    <string name="settings_howto_step6">Double-click its Value column and copy the whole value (it is very long).</string>
+    <string name="settings_howto_step7">Paste it into the ms_token field above and tap Save.</string>
+    <string name="settings_howto_note">Tip: if TikTok still shows a login request, also copy tt_chain_token the same way.</string>
+    <string name="settings_ok">OK</string>
+    <string name="settings_ms_token_label">ms_token</string>
+    <string name="settings_chain_token_label">tt_chain_token (optional)</string>
+    <string name="settings_token_placeholder">Paste cookie value here</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_clear">Clear TikTok cookies</string>
+    <string name="settings_clear_youtube">Clear YouTube cookies</string>
+    <string name="settings_saved_msg">Cookies saved</string>
+    <string name="settings_youtube_cookies_label">YouTube cookies (Cookie header)</string>
+    <string name="settings_youtube_desc">YouTube sometimes blocks downloads with a bot-check. Paste the Cookie header from a browser where you are signed in to YouTube.
+
+How to get it: open youtube.com in Chrome → F12 → Network → reload the page → click any request → Request Headers → copy the whole Cookie value.</string>
+
+    <!-- TikTok hint -->
+    <string name="tiktok_hint_title">TikTok needs a cookie to download</string>
+    <string name="tiktok_hint_msg">TikTok blocks downloads without a login cookie. Add your ms_token in Settings to unlock TikTok downloads.</string>
+    <string name="tiktok_hint_open_settings">Open Settings</string>
+    <string name="youtube_hint_title">YouTube needs a cookie to download</string>
+    <string name="youtube_hint_msg">YouTube blocked this download as a bot-check. Add your YouTube cookies in Settings to fix it.</string>
+
+    <!-- Misc -->
+    <string name="by">by</string>
+</resources>
