@@ -37,9 +37,13 @@ data class VideoFormat(
     val height: Int,
     val abr: Int,
     val selector: String,
+    val filesizeText: String = "",
 ) {
     val qualityText: String
-        get() = if (kind == "audio") "$abr kbps · $ext" else "${height}p · $ext"
+        get() {
+            val base = if (kind == "audio") "$abr kbps · ${ext.uppercase()}" else if (height > 0) "${height}p · ${ext.uppercase()}" else ext.uppercase()
+            return if (filesizeText.isNotBlank()) "$base (~$filesizeText)" else base
+        }
 }
 
 data class DownloadItem(

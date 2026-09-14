@@ -337,25 +337,12 @@ private fun DownloadTab(
                 )
             } else {
                 Spacer(Modifier.height(16.dp))
-                KhmerAudioFormatSelectorCard(
-                    selectedFormat = state.selectedKhmerAudioFormat,
-                    onFormatSelected = { fmt -> viewModel.selectKhmerAudioFormat(fmt) }
+                FormatSelectionCard(
+                    formats = video.formats,
+                    selectedIndex = state.selectedFormat,
+                    onFormatSelected = { index -> viewModel.selectFormat(index) },
                 )
-                Text(
-                    text = stringResource(R.string.label_formats),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Spacer(Modifier.height(8.dp))
-                video.formats.forEachIndexed { index, format ->
-                    FormatRow(
-                        format = format,
-                        selected = index == state.selectedFormat,
-                        onClick = { viewModel.selectFormat(index) },
-                    )
-                    Spacer(Modifier.height(8.dp))
-                }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(16.dp))
 
                 if (state.downloading) {
                     ProgressCard(state, onCancel = viewModel::cancelDownload)
@@ -842,62 +829,135 @@ private fun FormatRow(format: VideoFormat, selected: Boolean, onClick: () -> Uni
 }
 
 @Composable
-private fun KhmerAudioFormatSelectorCard(
-    selectedFormat: KhmerAudioFormat,
-    onFormatSelected: (KhmerAudioFormat) -> Unit
+private fun FormatSelectionCard(
+    formats: List<VideoFormat>,
+    selectedIndex: Int,
+    onFormatSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+    // Determine active tab: 0 for Video (MP4), 1 for Audio (MP3)
+    val currentlySelected = formats.getOrNull(selectedIndex)
+    var selectedCategory by remember(formats) {
+        mutableStateOf(if (currentlySelected?.kind == "audio") 1 else 0)
+    }
+
+    val videoFormats = formats.mapIndexed { idx, fmt -> idx to fmt }.filter { it.second.kind != "audio" }
+    val audioFormats = formats.mapIndexed { idx, fmt -> idx to fmt }.filter { it.second.kind == "audio" }
+
     Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-        ),
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        modifier = modifier.fillMaxWidth(),
     ) {
-        Column(Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.MusicNote,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(Modifier.width(6.dp))
-                Text(
-                    text = "Khmer Audio Export Format (ប្រភេទសំឡេង)",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-            Spacer(Modifier.height(8.dp))
+        Column(Modifier.padding(14.dp)) {
+            // Category Selector: Video (MP4) vs Audio (MP3)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                KhmerAudioFormat.values().forEach { fmt ->
-                    val isSelected = selectedFormat == fmt
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = { onFormatSelected(fmt) },
-                        label = {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = fmt.name,
-                                    fontWeight = FontWeight.Bold,
-                                    style = MaterialTheme.typography.labelLarge
-                                )
-                                Text(
-                                    text = fmt.bitrate.split("·").firstOrNull()?.trim() ?: "",
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                            }
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        )
+                FilterChip(
+                    selected = selectedCategory == 0,
+                    onClick = {
+                        selectedCategory = 0
+                        // If current selection is not video, auto-select first video option
+                        if (currentlySelected?.kind == "audio" && videoFormats.isNotEmpty()) {
+                            onFormatSelected(videoFormats.first().first)
+                        }
+                    },
+                    label = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Icon(
+                                Icons.Filled.PlayCircle,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.tab_format_video),
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                )
+                FilterChip(
+                    selected = selectedCategory == 1,
+                    onClick = {
+                        selectedCategory = 1
+                        // If current selection is not audio, auto-select first audio option
+                        if (currentlySelected?.kind != "audio" && audioFormats.isNotEmpty()) {
+                            onFormatSelected(audioFormats.first().first)
+                        }
+                    },
+                    label = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Icon(
+                                Icons.Filled.MusicNote,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.tab_format_audio),
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                )
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Text(
+                text = if (selectedCategory == 0) {
+                    stringResource(R.string.label_video_resolution)
+                } else {
+                    stringResource(R.string.label_audio_quality)
+                },
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            val displayedFormats = if (selectedCategory == 0) videoFormats else audioFormats
+            if (displayedFormats.isEmpty()) {
+                // Fallback: show all formats if filtering returned none
+                formats.forEachIndexed { index, format ->
+                    FormatRow(
+                        format = format,
+                        selected = index == selectedIndex,
+                        onClick = { onFormatSelected(index) },
                     )
+                    Spacer(Modifier.height(6.dp))
+                }
+            } else {
+                displayedFormats.forEach { (originalIndex, format) ->
+                    FormatRow(
+                        format = format,
+                        selected = originalIndex == selectedIndex,
+                        onClick = { onFormatSelected(originalIndex) },
+                    )
+                    Spacer(Modifier.height(6.dp))
                 }
             }
         }
@@ -979,21 +1039,12 @@ private fun PlaylistSection(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(Modifier.padding(14.dp)) {
-            Text(
-                text = stringResource(R.string.label_formats),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
+            FormatSelectionCard(
+                formats = video.formats,
+                selectedIndex = state.selectedFormat,
+                onFormatSelected = { index -> viewModel.selectFormat(index) },
             )
-            Spacer(Modifier.height(8.dp))
-            video.formats.forEachIndexed { index, format ->
-                FormatRow(
-                    format = format,
-                    selected = index == state.selectedFormat,
-                    onClick = { viewModel.selectFormat(index) },
-                )
-                Spacer(Modifier.height(6.dp))
-            }
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(10.dp))
             HorizontalDivider()
             Spacer(Modifier.height(10.dp))
             // Profile of the selected video: thumbnail, title, duration, quality.

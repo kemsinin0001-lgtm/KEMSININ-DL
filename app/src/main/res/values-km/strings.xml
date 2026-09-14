@@ -34,6 +34,10 @@
     <!-- Video info -->
     <string name="format_quality">%1$dp · %2$s</string>
     <string name="label_formats">ជ្រើសរើសគុណភាព</string>
+    <string name="tab_format_video">🎬 វីដេអូ (MP4)</string>
+    <string name="tab_format_audio">🎵 សំឡេង (MP3)</string>
+    <string name="label_video_resolution">ជ្រើសរើសទំហំវីដេអូ (Resolution)</string>
+    <string name="label_audio_quality">ជ្រើសរើសគុណភាពសំឡេង (Audio Format)</string>
     <string name="status_finalizing">កំពុងរក្សាទុកទៅ Downloads…</string>
     <string name="status_starting">កំពុងចាប់ផ្តើម…</string>
     <string name="status_batch_downloading">កំពុងទាញយក %1$d/%2$d</string>

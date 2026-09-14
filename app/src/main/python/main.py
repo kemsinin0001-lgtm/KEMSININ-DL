@@ -116,119 +116,214 @@ def _has_audio(f):
     return bool(f.get("acodec") and f.get("acodec") != "none")
 
 
+def _format_filesize(bytes_val):
+    if not bytes_val or bytes_val <= 0:
+        return ""
+    mb = bytes_val / (1024.0 * 1024.0)
+    if mb >= 1000:
+        return "%.1f GB" % (mb / 1024.0)
+    return "%.1f MB" % mb
+
+
 def _pick_formats(info):
-    """Curate a small list of practical formats."""
+    """Curate a clean list of video resolutions (1080p, 720p, 480p, 360p, Best) and audio formats (MP3, M4A, WAV)."""
     formats = info.get("formats") or []
     candidates = []
 
+    # 1. Best Quality (MP4 Video + Audio)
     combined = [f for f in formats if _has_video(f) and _has_audio(f)]
-    if combined:
-        best = max(combined, key=lambda f: (f.get("height") or 0, f.get("tbr") or 0))
+    all_videos = [f for f in formats if _has_video(f)]
+    max_height = max([f.get("height") or 0 for f in all_videos], default=0)
+
+    # Standard Target Resolutions: 1080, 720, 480, 360
+    target_res = [
+        (1080, "1080p FHD", "b[height<=1080][ext=mp4]/bestvideo[height<=1080]+bestaudio/b[height<=1080]/b"),
+        (720, "720p HD", "b[height<=720][ext=mp4]/bestvideo[height<=720]+bestaudio/b[height<=720]/b"),
+        (480, "480p SD", "b[height<=480][ext=mp4]/bestvideo[height<=480]+bestaudio/b[height<=480]/b"),
+        (360, "360p (Data Saver)", "b[height<=360][ext=mp4]/bestvideo[height<=360]+bestaudio/b[height<=360]/b"),
+    ]
+
+    # Best Available MP4
+    best_combined = max(combined, key=lambda f: (f.get("height") or 0, f.get("tbr") or 0)) if combined else None
+    best_sz = (best_combined.get("filesize") or best_combined.get("filesize_approx")) if best_combined else 0
+    candidates.append({
+        "id": "best_mp4",
+        "label": "Best Quality MP4 (គុណភាពខ្ពស់បំផុត)",
+        "kind": "video",
+        "ext": "mp4",
+        "height": max_height or (best_combined.get("height") or 0 if best_combined else 0),
+        "abr": 0,
+        "filesize_text": _format_filesize(best_sz),
+        "selector": "b[ext=mp4]/bestvideo[ext=mp4]+bestaudio/b",
+    })
+
+    # Add available resolution tiers if the video supports them
+    for h, label, selector in target_res:
+        # Check if video has stream matching or higher than this resolution, or if max_height is close
+        matching = [f for f in all_videos if (f.get("height") or 0) == h]
+        sz = 0
+        if matching:
+            m = matching[0]
+            sz = m.get("filesize") or m.get("filesize_approx") or 0
+        elif max_height >= h:
+            pass  # downscale/fallback available in yt-dlp
+        else:
+            continue  # don't advertise 1080p for a 360p video
+
         candidates.append({
-            "id": best.get("format_id") or "best",
-            "label": "Best MP4 (video + audio)",
+            "id": "mp4_%dp" % h,
+            "label": "%s (MP4)" % label,
             "kind": "video",
-            "ext": best.get("ext") or "mp4",
-            "height": best.get("height") or 0,
+            "ext": "mp4",
+            "height": h,
             "abr": 0,
-            "selector": "b[ext=mp4]/b",
+            "filesize_text": _format_filesize(sz),
+            "selector": selector,
         })
 
-    video_only = [f for f in formats if _has_video(f) and not _has_audio(f)]
-    if video_only:
-        best = max(video_only, key=lambda f: (f.get("height") or 0, f.get("tbr") or 0))
-        candidates.append({
-            "id": best.get("format_id") or "bestvideo",
-            "label": "Video only (highest quality)",
-            "kind": "video",
-            "ext": best.get("ext") or "mp4",
-            "height": best.get("height") or 0,
-            "abr": 0,
-            "selector": "bestvideo[ext=mp4]/bestvideo",
-        })
-
+    # Audio Formats (MP3, M4A, WAV)
     audio_only = [f for f in formats if not _has_video(f) and _has_audio(f)]
     best_abr = max([f.get("abr") or 0 for f in audio_only], default=192)
+    audio_sz = 0
+    if audio_only:
+        a = audio_only[0]
+        audio_sz = a.get("filesize") or a.get("filesize_approx") or 0
 
-    # Khmer Audio Segment Format Options: MP3, M4A, WAV
     candidates.append({
-        "id": "khmer_mp3",
-        "label": "Khmer Audio Segment (MP3 · 320kbps)",
+        "id": "audio_mp3_320",
+        "label": "MP3 Audio (320 kbps · High Quality)",
         "kind": "audio",
         "ext": "mp3",
         "height": 0,
-        "abr": max(best_abr, 320),
+        "abr": 320,
+        "filesize_text": _format_filesize(audio_sz) or "~5 MB",
         "selector": "bestaudio/best",
     })
     candidates.append({
-        "id": "khmer_m4a",
-        "label": "Khmer Audio Segment (M4A · High Quality)",
+        "id": "audio_mp3_192",
+        "label": "MP3 Audio (192 kbps · Standard)",
+        "kind": "audio",
+        "ext": "mp3",
+        "height": 0,
+        "abr": 192,
+        "filesize_text": _format_filesize(int(audio_sz * 0.6)) if audio_sz else "~3 MB",
+        "selector": "bestaudio/best",
+    })
+    candidates.append({
+        "id": "audio_m4a",
+        "label": "M4A Audio (256 kbps · AAC)",
         "kind": "audio",
         "ext": "m4a",
         "height": 0,
-        "abr": max(best_abr, 256),
-        "selector": "bestaudio[ext=m4a]/bestaudio",
+        "abr": 256,
+        "filesize_text": _format_filesize(audio_sz) or "~4 MB",
+        "selector": "bestaudio[ext=m4a]/bestaudio/best",
     })
     candidates.append({
-        "id": "khmer_wav",
-        "label": "Khmer Audio Segment (WAV · Lossless Audio)",
+        "id": "audio_wav",
+        "label": "WAV Audio (Lossless · 1411 kbps)",
         "kind": "audio",
         "ext": "wav",
         "height": 0,
         "abr": 1411,
+        "filesize_text": "~30 MB",
         "selector": "bestaudio/best",
     })
 
-    if not candidates:
-        candidates.append({
-            "id": "default",
-            "label": "Default (best available)",
-            "kind": "video",
-            "ext": "mp4",
-            "height": 0,
-            "abr": 0,
-            "selector": "b",
-        })
     return candidates
 
 
 def _generic_formats():
-    """Format options for playlists, where per-video format tables differ."""
+    """Format options for profiles and playlists (all resolutions & audio)."""
     return [
         {
-            "id": "best",
-            "label": "Best MP4 (video + audio)",
+            "id": "best_mp4",
+            "label": "Best Quality MP4 (គុណភាពខ្ពស់បំផុត)",
             "kind": "video",
             "ext": "mp4",
-            "height": 0,
+            "height": 1080,
             "abr": 0,
-            "selector": "b[ext=mp4]/b",
+            "filesize_text": "",
+            "selector": "b[ext=mp4]/bestvideo[ext=mp4]+bestaudio/b",
         },
         {
-            "id": "khmer_mp3",
-            "label": "Khmer Audio Segment (MP3 · 320kbps)",
+            "id": "mp4_1080p",
+            "label": "1080p FHD (MP4)",
+            "kind": "video",
+            "ext": "mp4",
+            "height": 1080,
+            "abr": 0,
+            "filesize_text": "",
+            "selector": "b[height<=1080][ext=mp4]/bestvideo[height<=1080]+bestaudio/b[height<=1080]/b",
+        },
+        {
+            "id": "mp4_720p",
+            "label": "720p HD (MP4)",
+            "kind": "video",
+            "ext": "mp4",
+            "height": 720,
+            "abr": 0,
+            "filesize_text": "",
+            "selector": "b[height<=720][ext=mp4]/bestvideo[height<=720]+bestaudio/b[height<=720]/b",
+        },
+        {
+            "id": "mp4_480p",
+            "label": "480p SD (MP4)",
+            "kind": "video",
+            "ext": "mp4",
+            "height": 480,
+            "abr": 0,
+            "filesize_text": "",
+            "selector": "b[height<=480][ext=mp4]/bestvideo[height<=480]+bestaudio/b[height<=480]/b",
+        },
+        {
+            "id": "mp4_360p",
+            "label": "360p Data Saver (MP4)",
+            "kind": "video",
+            "ext": "mp4",
+            "height": 360,
+            "abr": 0,
+            "filesize_text": "",
+            "selector": "b[height<=360][ext=mp4]/bestvideo[height<=360]+bestaudio/b[height<=360]/b",
+        },
+        {
+            "id": "audio_mp3_320",
+            "label": "MP3 Audio (320 kbps · High Quality)",
             "kind": "audio",
             "ext": "mp3",
             "height": 0,
             "abr": 320,
+            "filesize_text": "~5 MB",
             "selector": "bestaudio/best",
         },
         {
-            "id": "khmer_m4a",
-            "label": "Khmer Audio Segment (M4A · High Quality)",
+            "id": "audio_mp3_192",
+            "label": "MP3 Audio (192 kbps · Standard)",
+            "kind": "audio",
+            "ext": "mp3",
+            "height": 0,
+            "abr": 192,
+            "filesize_text": "~3 MB",
+            "selector": "bestaudio/best",
+        },
+        {
+            "id": "audio_m4a",
+            "label": "M4A Audio (256 kbps · AAC)",
             "kind": "audio",
             "ext": "m4a",
             "height": 0,
             "abr": 256,
-            "selector": "bestaudio[ext=m4a]/bestaudio",
+            "filesize_text": "~4 MB",
+            "selector": "bestaudio[ext=m4a]/bestaudio/best",
         },
         {
-            "id": "khmer_wav",
-            "label": "Khmer Audio Segment (WAV · Lossless Audio)",
+            "id": "audio_wav",
+            "label": "WAV Audio (Lossless · 1411 kbps)",
             "kind": "audio",
             "ext": "wav",
             "height": 0,
             "abr": 1411,
+            "filesize_text": "~30 MB",
             "selector": "bestaudio/best",
         },
     ]

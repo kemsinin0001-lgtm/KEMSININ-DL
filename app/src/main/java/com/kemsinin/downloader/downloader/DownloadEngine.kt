@@ -47,6 +47,7 @@ object DownloadEngine {
                 height = fm["height"]?.toDouble()?.toInt() ?: 0,
                 abr = fm["abr"]?.toDouble()?.toInt() ?: 0,
                 selector = fm["selector"]?.toString() ?: "b",
+                filesizeText = fm["filesize_text"]?.toString() ?: "",
             )
         }
         val entries = map["entries"]?.asList().orEmpty().mapNotNull { raw ->

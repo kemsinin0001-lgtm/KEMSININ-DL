@@ -34,6 +34,10 @@
     <!-- Video info -->
     <string name="format_quality">%1$dp · %2$s</string>
     <string name="label_formats">Choose quality</string>
+    <string name="tab_format_video">🎬 Video (MP4)</string>
+    <string name="tab_format_audio">🎵 Audio (MP3)</string>
+    <string name="label_video_resolution">Choose Video Resolution (MP4)</string>
+    <string name="label_audio_quality">Choose Audio Format (MP3)</string>
     <string name="status_finalizing">Saving to Downloads…</string>
     <string name="status_starting">Starting…</string>
     <string name="status_batch_downloading">Downloading %1$d of %2$d</string>
