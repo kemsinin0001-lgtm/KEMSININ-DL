@@ -85,7 +85,12 @@ dependencies {
 chaquopy {
     defaultConfig {
         version = "3.12"
-        buildPython("C:/Users/KSN REELSHORT/AppData/Roaming/uv/python/cpython-3.12.14-windows-x86_64-none/python.exe")
+
+        val localPy = file("C:/Users/KSN REELSHORT/AppData/Roaming/uv/python/cpython-3.12.14-windows-x86_64-none/python.exe")
+        if (localPy.exists()) {
+            buildPython(localPy.absolutePath)
+        }
+
         pip {
             install("yt-dlp")
         }
