@@ -41,7 +41,7 @@ Visit our live web portal to download the latest APK packages:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/kemsinin0006-cyber/APK-1.git
+   git clone https://github.com/kemsinin0001-lgtm/KEMSININ-DL.git
    ```
 2. Open the project in **Android Studio**.
 3. Ensure Android SDK 34 and JDK 17 are configured.
