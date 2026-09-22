@@ -1,18 +1,11 @@
 name: Build & Release KEMSININ Downloader APK
 
+# Trigger manually or via git release tag to avoid automatic failures while account billing is locked
 on:
+  workflow_dispatch:
   push:
-    branches: [ "main", "master" ]
-    paths:
-      - "app/**"
-      - "gradle/**"
-      - "build.gradle.kts"
-      - "settings.gradle.kts"
-      - "gradlew"
-      - ".github/workflows/build-apk.yml"
     tags:
       - "v*"
-  workflow_dispatch:
 
 concurrency:
   group: build-apk-${{ github.ref }}
