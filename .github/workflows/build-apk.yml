@@ -1,11 +1,22 @@
-﻿name: Build & Release KEMSININ Downloader APK
+name: Build & Release KEMSININ Downloader APK
 
 on:
   push:
     branches: [ "main", "master" ]
+    paths:
+      - "app/**"
+      - "gradle/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradlew"
+      - ".github/workflows/build-apk.yml"
     tags:
       - "v*"
   workflow_dispatch:
+
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -56,7 +67,7 @@ jobs:
           retention-days: 30
 
       - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: release-apks/*.apk
@@ -65,3 +76,4 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

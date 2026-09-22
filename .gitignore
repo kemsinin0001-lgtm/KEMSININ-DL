@@ -132,3 +132,11 @@ yt-dlp-plugins
 
 # Packages
 yt_dlp_ejs/
+
+# Local build and AI agent directories
+.gradle/
+.kilo/
+.NO_AI/
+.agents/
+skills-lock.json
+
