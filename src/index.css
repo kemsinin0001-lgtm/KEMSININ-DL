@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #090a0f;
+    color: #f8fafc;
+    font-family: 'Plus Jakarta Sans', 'Kantumruy Pro', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-grotesk {
+  font-family: 'Space Grotesk', 'Kantumruy Pro', sans-serif;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+}
+
+.gradient-glow {
+  box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.35);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
